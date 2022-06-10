@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">AppLockerWithYyoutube</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="enter_password">Введите пароль</string>
+    <string name="n">Приложение заблокировано.\nВведите пароль</string>
+    <string name="app_locker_channel_name">Уведомления блокировщика рекламы</string>
+    <string name="app_locker_service_notification_title">Ваши приложения под надежной защитой</string>
+</resources>
