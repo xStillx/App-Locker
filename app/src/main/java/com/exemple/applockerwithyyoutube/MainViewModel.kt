@@ -1,7 +1,6 @@
 package com.exemple.applockerwithyyoutube
 
 import android.content.Context
-import android.content.pm.ApplicationInfo
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,12 +20,22 @@ class MainViewModel @Inject constructor(
     @ApplicationContext applicationContext: Context
 ) : ViewModel() {
 
-    private val _app = MutableLiveData<ApplicationInfo>()
-    val app get() = _app.asLiveData()
+    private val _apps = MutableLiveData<List<App>>()
+    val apps get() = _apps.asLiveData()
 
     private val repository: AppRepository = AppRepository(
         AppDataBase.getDataBase(applicationContext).appDao()
     )
+
+    init {
+        getLockedApps()
+    }
+
+    private fun getLockedApps(){
+        viewModelScope.launch {
+            _apps.value = repository.getLockedApps()
+        }
+    }
 
     fun onAddToBlockingList(app: App) {
         viewModelScope.launch(Dispatchers.IO) {

@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     private val viewBinding: ActivityMainBinding by viewBinding(ActivityMainBinding::bind)
     private var appModel: ArrayList<App> = arrayListOf()
     private var adapterApps: AppsAdapter? = null
+    private var lockedApps: List<App>? = arrayListOf()
     private lateinit var password: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +54,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observe() {
+        viewModel.apps.observe(this){
+            lockedApps = it
+        }
     }
 
     private fun settings() {
@@ -118,10 +122,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
         val appList: List<ApplicationInfo> =
-            packageManager.getInstalledApplications(0)
+            this.packageManager.getInstalledApplications(0)
                 .filter {
                     val appName = packageName
                     it.packageName != appName && (it.flags and ApplicationInfo.FLAG_SYSTEM) == 0
+                    lockedApps?.any { app -> app.packageName != it.packageName }!!
                 }
         for (app in appList){
             appModel.add(
@@ -131,6 +136,17 @@ class MainActivity : AppCompatActivity() {
                     app.packageName
                 )
             )
+        }
+        lockedApps?.let {
+            for (lockedApp in it){
+                appModel.add(
+                    App(
+                        lockedApp.packageName,
+                        lockedApp.isBlocked,
+                        lockedApp.appName
+                    )
+                )
+            }
         }
         adapterApps = AppsAdapter{ app, isDelete ->
             Log.d("AppsAdapter", "Foreground app: $app , $isDelete")
